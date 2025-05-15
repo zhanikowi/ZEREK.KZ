@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>helvetica_bold.otf</string>
+		<string>helvetica_boldoblique.otf</string>
+		<string>helvetica_cyr_boldoblique.ttf</string>
+		<string>helvetica_cyr_oblique.ttf</string>
+		<string>helvetica_light.otf</string>
+		<string>helvetica_lightoblique.otf</string>
+		<string>helvetica_oblique.otf</string>
+		<string>helvetica_regular.otf</string>
+		<string>helvetica-rounded-bold.otf</string>
+		<string>Helvetica-Bold.ttf</string>
+		<string>Helvetica.ttf</string>
+	</array>
+</dict>
+</plist>
