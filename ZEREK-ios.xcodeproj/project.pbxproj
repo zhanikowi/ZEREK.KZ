@@ -47,7 +47,7 @@
 		8B5E3F8E2DB925F20010710D /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5E3F8D2DB925F20010710D /* NotificationsView.swift */; };
 		8B5E3F912DB927300010710D /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5E3F902DB9272A0010710D /* Date+Extension.swift */; };
 		8B5E3F932DB92B620010710D /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B5E3F922DB92B620010710D /* NotificationView.swift */; };
-		8B97952B2DA6997B007AFB52 /* LevelSelectAllSecntenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B97952A2DA6997B007AFB52 /* LevelSelectAllSecntenceView.swift */; };
+		8B97952B2DA6997B007AFB52 /* LevelSelectAllSentenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B97952A2DA6997B007AFB52 /* LevelSelectAllSentenceView.swift */; };
 		8B97952D2DA69B52007AFB52 /* koiJuu.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8B97952C2DA69B52007AFB52 /* koiJuu.pdf */; };
 		8B97952F2DA6B46A007AFB52 /* LevelFillView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B97952E2DA6B46A007AFB52 /* LevelFillView.swift */; };
 		8B9795322DA6C311007AFB52 /* RespectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B9795312DA6C311007AFB52 /* RespectView.swift */; };
@@ -111,7 +111,6 @@
 		8BFF61DF2D96B2DB00A5F179 /* Image + extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFF61DE2D96B2DB00A5F179 /* Image + extension.swift */; };
 		8BFF61E12D96B41500A5F179 /* Int + extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFF61E02D96B41500A5F179 /* Int + extension.swift */; };
 		8BFF61E42D96B4CC00A5F179 /* UnitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFF61E32D96B4CC00A5F179 /* UnitModel.swift */; };
-		8BFF61E62D96B83100A5F179 /* LevelModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BFF61E52D96B83100A5F179 /* LevelModel.swift */; };
 		8BFF61EC2D96B8D900A5F179 /* l1.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8BFF61E72D96B8D900A5F179 /* l1.pdf */; };
 		8BFF61ED2D96B8D900A5F179 /* l5.png in Resources */ = {isa = PBXBuildFile; fileRef = 8BFF61E82D96B8D900A5F179 /* l5.png */; };
 		8BFF61EE2D96B8D900A5F179 /* l2.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 8BFF61E92D96B8D900A5F179 /* l2.pdf */; };
@@ -154,7 +153,7 @@
 		8B5E3F8D2DB925F20010710D /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
 		8B5E3F902DB9272A0010710D /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
 		8B5E3F922DB92B620010710D /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
-		8B97952A2DA6997B007AFB52 /* LevelSelectAllSecntenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelSelectAllSecntenceView.swift; sourceTree = "<group>"; };
+		8B97952A2DA6997B007AFB52 /* LevelSelectAllSentenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelSelectAllSentenceView.swift; sourceTree = "<group>"; };
 		8B97952C2DA69B52007AFB52 /* koiJuu.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = koiJuu.pdf; sourceTree = "<group>"; };
 		8B97952E2DA6B46A007AFB52 /* LevelFillView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelFillView.swift; sourceTree = "<group>"; };
 		8B9795312DA6C311007AFB52 /* RespectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RespectView.swift; sourceTree = "<group>"; };
@@ -220,7 +219,6 @@
 		8BFF61DE2D96B2DB00A5F179 /* Image + extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Image + extension.swift"; sourceTree = "<group>"; };
 		8BFF61E02D96B41500A5F179 /* Int + extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int + extension.swift"; sourceTree = "<group>"; };
 		8BFF61E32D96B4CC00A5F179 /* UnitModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitModel.swift; sourceTree = "<group>"; };
-		8BFF61E52D96B83100A5F179 /* LevelModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelModel.swift; sourceTree = "<group>"; };
 		8BFF61E72D96B8D900A5F179 /* l1.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = l1.pdf; sourceTree = "<group>"; };
 		8BFF61E82D96B8D900A5F179 /* l5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = l5.png; sourceTree = "<group>"; };
 		8BFF61E92D96B8D900A5F179 /* l2.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = l2.pdf; sourceTree = "<group>"; };
@@ -322,7 +320,7 @@
 				8476E3B92DCBF937000ACFFD /* LevelContainerView.swift */,
 				8B4405732D9D805F003C0CF0 /* LevelSelectTranslateView.swift */,
 				8B0294C72DA02D7900E3C434 /* LevelPutWordView.swift */,
-				8B97952A2DA6997B007AFB52 /* LevelSelectAllSecntenceView.swift */,
+				8B97952A2DA6997B007AFB52 /* LevelSelectAllSentenceView.swift */,
 				8B97952E2DA6B46A007AFB52 /* LevelFillView.swift */,
 			);
 			path = Level;
@@ -656,7 +654,6 @@
 			isa = PBXGroup;
 			children = (
 				8BFF61E32D96B4CC00A5F179 /* UnitModel.swift */,
-				8BFF61E52D96B83100A5F179 /* LevelModel.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -822,12 +819,11 @@
 				8BD26FD42D7A75B500245358 /* WelcomeView.swift in Sources */,
 				8476E3BA2DCBF940000ACFFD /* LevelContainerView.swift in Sources */,
 				8B5E3F872DB8E5A80010710D /* PrivacyView.swift in Sources */,
-				8BFF61E62D96B83100A5F179 /* LevelModel.swift in Sources */,
 				8476E3A32DCB5733000ACFFD /* Cards.swift in Sources */,
 				8B48CAA42D8E3C40007D063C /* UserModel.swift in Sources */,
 				8BE835112D7B74EF00D175F3 /* CreatePasswordView.swift in Sources */,
 				8476E39F2DCA1F31000ACFFD /* DictionaryView.swift in Sources */,
-				8B97952B2DA6997B007AFB52 /* LevelSelectAllSecntenceView.swift in Sources */,
+				8B97952B2DA6997B007AFB52 /* LevelSelectAllSentenceView.swift in Sources */,
 				8476E3A12DCA1F3F000ACFFD /* DictionaryCardView.swift in Sources */,
 				8B97952F2DA6B46A007AFB52 /* LevelFillView.swift in Sources */,
 				8BFF61D62D96B10500A5F179 /* MainView.swift in Sources */,

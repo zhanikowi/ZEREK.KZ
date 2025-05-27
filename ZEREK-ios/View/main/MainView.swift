@@ -9,131 +9,128 @@ import SwiftUI
 
 struct MainView: View {
     
-    @State private var showLevels: Bool = false
-    
-    @ObservedObject private var vm: MainViewModel = MainViewModel()
-    
-    private var navigationBar: some View {
-        HStack {
-            Image("money")
-                .configure
-                .frame(maxWidth: 25)
-            
-            Constant.getText(text: vm.user.money!.toString, font: .regular, size: 20)
-                .foregroundColor(Constant.gold)
-            
-            Spacer()
-            Constant.getText(text: "Tasks", font: .bold, size: 20)
-            
-            Spacer()
-            Image("heart")
-                .configure
-                .frame(maxWidth: 25)
-            
-            Constant.getText(text: vm.user.life!.toString, font: .regular, size: 20)
-        }
-        .padding(.horizontal)
-    }
-    
-    private func unitConfig(unit: UnitModel, isLeft: Bool) -> some View{
-         VStack {
-            HStack {
-                VStack {
-                    Constant.getText(text: "Unit \(unit.title)", font: .bold, size: 16)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Constant.getText(text: unit.description, font: .regular, size: 12)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top, 5)
-                }
-                
-                Spacer()
-                
-                Image(systemName: "text.book.closed.fill")
-                    .configure
-                    .frame(maxWidth: 14)
-                    .padding(7)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Constant.black.opacity(0.2), lineWidth: 1)
-                    }
-                    .shadow(color: Constant.black.opacity(0.2), radius: 10, x: 1, y: 1)
-            }
-            .padding()
-            .background(Constant.gold)
-            .foregroundColor(Constant.white)
-            .cornerRadius(16)
-            .padding(.top)
-            .onTapGesture {
-                showLevels = true
-            }
-            
-            levelsConfig(levels: unit.levels,
-                         isLeft: isLeft,
-                         unitCount: unit.title)
-        }
-        .padding(.horizontal)
-    }
-    
-    private func levelsConfig(levels: [LevelModel], isLeft: Bool, unitCount: Int) -> some View {
-        let count = ((unitCount - 1) * 5)
-        
-        return LazyVStack {
-            ForEach(Array(levels.enumerated()), id: \.element.id) { index, level in
-                levelView(for: level, at: index, isLeft: isLeft, count: count)
-            }
-        }
-    }
+    @State private var selectedUnit: Units? = nil
 
-    private func levelView(for level: LevelModel, at index: Int, isLeft: Bool, count: Int) -> some View {
-        let padding: CGFloat = index > 2 ? 120 * CGFloat(4 - index) : 120 * CGFloat(index)
-        let backgroundColor = vm.user.level! >= (index + count) ? Constant.purple : Constant.gray
-        
-        return LevelView(
-            level: level,
-            alignment: isLeft ? .left : .right,
-            padding: padding,
-            backgroundColor: backgroundColor
-        )
-    }
-
-
-    private func unitImage(name: String, isLeft: Bool) -> some View {
-        Image(name).configure
-            .frame(maxWidth: Constant.width * 0.27)
-            .padding(isLeft ? .leading : .trailing, Constant.width * 0.47)
-            .padding(.top, Constant.width * 0.3)
-    }
-
-    public var units: some View {
-        
-        return ScrollView(.vertical, showsIndicators: false) {
-            LazyVStack {
-                ForEach(vm.units) { unit in
-                    let isLeft = unit.title % 2 == 0
-
-                    ZStack {
-                        unitImage(name: unit.imageName, isLeft: isLeft)
-                        unitConfig(unit: unit, isLeft: isLeft)
-                    }
-                }
-            }
-        }
-    }
+    @StateObject private var vm = MainViewModel()
     
     var body: some View {
         ZStack {
             VStack {
                 navigationBar
-                units
+                
+                if vm.isLoading {
+                    Spacer()
+                    ProgressView("Loading...")
+                        .padding()
+                } else if let error = vm.errorMessage {
+                    Spacer()
+                    Text("Ошибка: \(error)")
+                        .foregroundColor(.red)
+                        .padding()
+                } else {
+                    units
+                }
+                
                 Spacer()
             }
-            .onAppear {
-                vm.fetchUnit()
+            .task {
+                await vm.fetchUnits()
             }
         }
-        .fullScreenCover(isPresented: $showLevels) {
-            LevelContainerView()
+        .background(Color.white)
+        .fullScreenCover(item: $selectedUnit) { unit in
+            LevelContainerView(unit: unit)
         }
+    }
+    
+    private var navigationBar: some View {
+        HStack {
+            Image("money").configure.frame(maxWidth: 25)
+            Constant.getText(text: vm.user.money?.toString ?? "", font: .regular, size: 20)
+                .foregroundColor(Constant.gold)
+            
+            Spacer()
+            Constant.getText(text: "Tasks", font: .bold, size: 20)
+            Spacer()
+            
+            Image("heart").configure.frame(maxWidth: 25)
+            Constant.getText(text: vm.user.life?.toString ?? "", font: .regular, size: 20)
+        }
+        .padding(.horizontal)
+    }
+    
+    
+    var units: some View {
+        VStack {
+            VStack {
+               HStack {
+                   VStack {
+                       Constant.getText(text: "Units", font: .bold, size: 16)
+                           .frame(maxWidth: .infinity, alignment: .leading)
+                       Constant.getText(text: "Units here", font: .regular, size: 12)
+                           .frame(maxWidth: .infinity, alignment: .leading)
+                           .padding(.top, 5)
+                   }
+                   
+                   Spacer()
+                   
+                   Image(systemName: "text.book.closed.fill")
+                       .configure
+                       .frame(maxWidth: 14)
+                       .padding(7)
+                       .overlay {
+                           RoundedRectangle(cornerRadius: 10)
+                               .stroke(Constant.black.opacity(0.2), lineWidth: 1)
+                       }
+                       .shadow(color: Constant.black.opacity(0.2), radius: 10, x: 1, y: 1)
+               }
+               .padding()
+               .background(Constant.gold)
+               .foregroundColor(Constant.white)
+               .cornerRadius(16)
+               .padding(.top)
+            }
+            .padding(.horizontal)
+            
+            ScrollView {
+                ZStack {
+                    VStack(spacing: 0) {
+                        ForEach(vm.allunits) { unit in
+                            LevelView(
+                                level: unit,
+                                alignment: levelViewAlignment(queue: unit.queue),
+                                backgroundColor: Constant.purple) {
+                                    selectedUnit = unit.units.first
+                                }
+                                .frame(height: 100)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.trailing, 150)
+                    
+                    GeometryReader { geo in
+                        Image("mainPageZerek")
+                            .resizable()
+                            .frame(width: 150, height: 180)
+                            .position(
+                                x: geo.size.width - 100,
+                                y: geo.size.height / 2
+                            )
+                    }
+                }
+            }
+        }
+    }
+    
+    private func levelViewAlignment(queue: Int) -> LevelView.Alignment {
+        let alignment: LevelView.Alignment
+        switch (queue - 1) % 4 {
+            case 0: alignment = .right
+            case 1, 3: alignment = .center
+            case 2: alignment = .left
+            default: alignment = .center
+        }
+        return alignment
     }
 }
 

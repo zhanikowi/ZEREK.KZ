@@ -7,22 +7,15 @@
 
 import SwiftUI
 
+@MainActor
 final class MainViewModel: ObservableObject {
     @AppStorage("showed_onboarding_key") public var showedOnboarding: Bool = false
     @Published public var page: Page = .home
     @Published public var user: UserModel = UserModel()
     
-    @Published public var units: [UnitModel] = [
-        UnitModel(title: 1, description: "Everyday Basics", levels: [
-            LevelModel(image: "l1", words: [LevelTest(words: "кітап"), LevelTest(words: "жасыл"), LevelTest(words: "екі"), LevelTest(words: "зерек"), LevelTest(words: "жасыл"), LevelTest(words: "жасыл")], sentence: "", answer: "зерек", fillText: "Бұл менің  _______ ."),
-            LevelModel(image: "l2", words:[LevelTest(words: "кітап"), LevelTest(words: "жасыл"), LevelTest(words: "екі"), LevelTest(words: "зерек"), LevelTest(words: "жасыл"), LevelTest(words: "жасыл")], sentence: "", answer: "зерек", fillText: "Бұл менің  _______ ."),
-            LevelModel(image: "l3", words:[LevelTest(words: "кітап"), LevelTest(words: "жасыл"), LevelTest(words: "екі"), LevelTest(words: "зерек"), LevelTest(words: "жасыл"), LevelTest(words: "жасыл")], sentence: "", answer: "зерек", fillText: "Бұл менің  _______ ."),
-            LevelModel(image: "l4", words:[LevelTest(words: "кітап"), LevelTest(words: "жасыл"), LevelTest(words: "екі"), LevelTest(words: "зерек"), LevelTest(words: "жасыл"), LevelTest(words: "жасыл")], sentence: "", answer: "зерек", fillText: "Бұл менің  _______ ."),
-            LevelModel(image: "l5", words: [LevelTest(words: "кітап"), LevelTest(words: "жасыл"), LevelTest(words: "екі"), LevelTest(words: "зерек"), LevelTest(words: "жасыл"), LevelTest(words: "жасыл")], sentence: "", answer: "зерек", fillText: "Бұл менің  _______ ."),
-        ],
-                  imageName: "4"
-                 )
-    ]
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String? = nil
+    @Published var allunits: [UnitsModel] = []
     
     @Published public var isLeft: Bool = true
     @Published public var paddingValue: CGFloat = 0
@@ -36,11 +29,8 @@ final class MainViewModel: ObservableObject {
         UserRatingModel(rank: 5, name: "Arnur", photo: "defaultPhoto", score: 20),
         UserRatingModel(rank: 6, name: "Zhan", photo: "defaultPhoto", score: 0)
     ]
-    @Published public var selectLevel: LevelModel? = LevelModel(image: "l4", words:[LevelTest(words: "кітап"), LevelTest(words: "жасыл"), LevelTest(words: "екі"), LevelTest(words: "зерек"), LevelTest(words: "жасыл"), LevelTest(words: "жасыл")], sentence: "Excuse me, do you have a toothpaste ?", answer: "зерек", fillText: "Бұл менің")
     
     @Published public var levelProgressValue: CGFloat = 0.1
-    @Published public var selectedWord: String = "Зерек"
-    
     @Published public var respectText: String = "Keep going!"
     
     var isAuthorized: Bool {
@@ -48,15 +38,7 @@ final class MainViewModel: ObservableObject {
     }
 }
 
-extension MainViewModel {
-    public func fetchUnit() {
-        ServerManager.fetchUnit(unitID: "Unit1") { units in
-            DispatchQueue.main.async {
-                print(units)
-            }
-        }
-    }
-    
+extension MainViewModel {    
     public func fetchUser() {
         ServerManager.fetchUser() { fetchedUser in
             DispatchQueue.main.async { [self] in
@@ -82,5 +64,26 @@ extension MainViewModel {
         Task {
             try ServerManager.signOut()
         }
+    }
+    
+    func fetchUnits() async {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            let units = try await ServerManager.asyncFetchUnits()
+            let allunits = [
+                UnitsModel(iconName: "Unit1", title: "UNITS", description: "HERE ALL UNITS", queue: 1, units: units),
+                UnitsModel(iconName: "Unit2", title: "UNITS", description: "HERE ALL UNITS", queue: 2, units: units),
+                UnitsModel(iconName: "Unit3", title: "UNITS", description: "HERE ALL UNITS", queue: 3, units: units),
+                UnitsModel(iconName: "Unit4", title: "UNITS", description: "HERE ALL UNITS", queue: 4, units: units),
+                UnitsModel(iconName: "Unit5", title: "UNITS", description: "HERE ALL UNITS", queue: 5, units: units)
+            ]
+            self.allunits = allunits
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        
+        isLoading = false
     }
 }

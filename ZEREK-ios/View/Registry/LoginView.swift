@@ -118,7 +118,7 @@ struct LoginView: View {
             Task {
                 if await viewModel.didTapLogin() {
                     navigation.navigate(to: .start)
-                }else {
+                } else {
                     print("No login")
                 }
             }

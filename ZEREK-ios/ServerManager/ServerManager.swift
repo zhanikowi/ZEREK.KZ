@@ -45,7 +45,7 @@ final class ServerManager {
     
     @discardableResult
     static func getAuthenticatedUser() throws -> UserModel? {
-        guard let user = Auth.auth().currentUser
+        guard Auth.auth().currentUser != nil
         else {
             return nil
         }
@@ -101,33 +101,79 @@ final class ServerManager {
     
     private static let db = Firestore.firestore()
     
-    static func fetchUnit(unitID: String, completion: @escaping ([[UnitTest]]) -> Void) {
-        db.collection(unitID).getDocuments { snapshot, error in
-            if let error = error {
-                print("Қате: \(error.localizedDescription)")
-                completion([])
-                return
-            }
-            
-            guard let documents = snapshot?.documents else {
-                print("Құжаттар табылмады.")
-                completion([])
-                return
-            }
-            
-            var unit: [[UnitTest]] = []
-            
-            for document in documents {
-                if let data = document.data() as? [String: [String]] {
-                    let unitList: [UnitTest] = data.map { (key, value) in
-                        UnitTest(title: key, questions: value)
-                    }
-                    unit.append(unitList)
+    static func asyncFetchUnits() async throws -> [Units] {
+        let unitNames = ["Unit1"]
+        let docNames = ["fillText", "finishSentence", "makeSentence", "correctTranslations"]
+
+        var result: [String: [String: [String: Any]]] = [:]
+
+        for unit in unitNames {
+            result[unit] = [:]
+
+            for docName in docNames {
+                let snapshot = try await db.collection(unit).document(docName).getDocument()
+                if let data = snapshot.data() {
+                    result[unit]?[docName] = data
                 }
             }
-            completion(unit)
         }
+
+        return parseUnitData(result)
     }
+
+    
+    static func parseUnitData(_ rawUnits: [String: [String: [String: Any]]]) -> [Units] {
+        var units: [Units] = []
+        
+        for (unitKey, documents) in rawUnits {
+            var fillText: [FillTextItem] = []
+            var finishSentence: [FinishSentenceItem] = []
+            var correctTranslations: [CorrectTranslationsItem] = []
+            var makeSentence: [MakeSentenceItem] = []
+            
+            for (docName, fields) in documents {
+                guard let type = UnitDocumentType(rawValue: docName) else { continue }
+                
+                switch type {
+                case .fillText:
+                    if let question = fields["question"] as? String,
+                       let correct = fields["correct"] as? String {
+                        fillText.append(FillTextItem(question: question, correct: correct))
+                    }
+                case .finishSentence:
+                    if let question = fields["question"] as? String,
+                       let options = fields["options"] as? [String],
+                       let correctIndex = fields["correct"] as? Int {
+                        finishSentence.append(FinishSentenceItem(question: question, options: options, correctIndex: correctIndex))
+                    }
+                case .correctTranslations:
+                    if let question = fields["question"] as? String,
+                       let options = fields["options"] as? [String],
+                       let correctIndex = fields["correct"] as? Int {
+                        correctTranslations.append(CorrectTranslationsItem(question: question, options: options, correctIndex: correctIndex))
+                    }
+                case .makeSentence:
+                    if let question = fields["question"] as? String,
+                       let shuffledWords = fields["shuffled"] as? [String],
+                       let correctSentence = fields["correct"] as? String {
+                        makeSentence.append(MakeSentenceItem(question: question, shuffledWords: shuffledWords, correctSentence: correctSentence))
+                    }
+                }
+            }
+            
+            let unit = Units(
+                fillText: fillText,
+                finishSentence: finishSentence,
+                correctTranslations: correctTranslations,
+                makeSentence: makeSentence
+            )
+            units.append(unit)
+        }
+        
+        return units
+    }
+    
+    
     
     public static func fetchUser(completion: @escaping (UserModel?) -> Void) {
         guard let email = Auth.auth().currentUser?.email else {
@@ -136,26 +182,26 @@ final class ServerManager {
         }
         
         let db = Firestore.firestore()
-            db.collection("users").whereField("email", isEqualTo: email).getDocuments { snapshot, error in
-                if let error = error {
-                    print("Error fetching user: \(error)")
-                    completion(nil)
-                    return
-                }
-
-                guard let document = snapshot?.documents.first else {
-                    completion(nil)
-                    return
-                }
-
-                do {
-                    let user = try document.data(as: UserModel.self)
-                    completion(user)
-                } catch {
-                    print("Error decoding user: \(error)")
-                    completion(nil)
-                }
+        db.collection("users").whereField("email", isEqualTo: email).getDocuments { snapshot, error in
+            if let error = error {
+                print("Error fetching user: \(error)")
+                completion(nil)
+                return
             }
+            
+            guard let document = snapshot?.documents.first else {
+                completion(nil)
+                return
+            }
+            
+            do {
+                let user = try document.data(as: UserModel.self)
+                completion(user)
+            } catch {
+                print("Error decoding user: \(error)")
+                completion(nil)
+            }
+        }
     }
     
     static func updateUserData(firstName: String?, lastName: String?, newPassword: String?, completion: @escaping (Result<UserModel, Error>) -> Void) {
@@ -168,19 +214,19 @@ final class ServerManager {
             completion(.failure(NSError(domain: "No user", code: 401)))
             return
         }
-
+        
         let db = Firestore.firestore()
         let userRef = db.collection("users").document(userEmail)
         var updatedFields: [String: Any] = [:]
-
+        
         if let firstName = firstName, !firstName.isEmpty {
             updatedFields["firstName"] = firstName
         }
-
+        
         if let lastName = lastName, !lastName.isEmpty {
             updatedFields["lastName"] = lastName
         }
-
+        
         func fetchAndReturnUser() {
             userRef.getDocument { document, error in
                 if let document = document, let data = document.data(), let userModel = UserModel(dictionary: data) {
@@ -190,14 +236,14 @@ final class ServerManager {
                 }
             }
         }
-
+        
         if !updatedFields.isEmpty {
             userRef.updateData(updatedFields) { error in
                 if let error = error {
                     completion(.failure(error))
                     return
                 }
-
+                
                 if let newPassword = newPassword, !newPassword.isEmpty {
                     user.updatePassword(to: newPassword) { error in
                         if let error = error {
@@ -222,5 +268,5 @@ final class ServerManager {
             fetchAndReturnUser()
         }
     }
-
+    
 }

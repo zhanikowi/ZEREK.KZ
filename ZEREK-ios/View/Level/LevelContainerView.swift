@@ -23,9 +23,9 @@ enum LevelType: Int, CaseIterable {
 }
 
 struct LevelContainerView: View {
+    let unit: Units
     
     @Environment(\.dismiss) private var dismiss
-    
     @State private var currentLevel: LevelType = .selectTranslate
     @State private var progress: Double = 0.25
     
@@ -37,22 +37,30 @@ struct LevelContainerView: View {
             print("Game Finished")
         }
     }
-    
+
     var body: some View {
         VStack {
             Constant.navigationHealthBar(progressValue: progress, health: 5) {
                 dismiss()
             }
-            
+
             switch currentLevel {
             case .selectTranslate:
-                LevelSelectTranslateView(onContinue: goToNextLevel)
+                if let item = unit.correctTranslations.first {
+                    LevelSelectTranslateView(item: item, onContinue: goToNextLevel)
+                }
             case .putWord:
-                LevelPutWordView(onContinue: goToNextLevel)
+                if let item = unit.finishSentence.first {
+                    LevelPutWordView(item: item, onContinue: goToNextLevel)
+                }
             case .selectSentence:
-                LevelSelectAllSentenceView(onContinue: goToNextLevel)
+                if let item = unit.makeSentence.first {
+                    LevelSelectAllSentenceView(item: item, onContinue: goToNextLevel)
+                }
             case .fill:
-                LevelFillView(onContinue: goToNextLevel)
+                if let item = unit.fillText.first {
+                    LevelFillView(item: item, onContinue: goToNextLevel)
+                }
             case .respect:
                 RespectView()
             }

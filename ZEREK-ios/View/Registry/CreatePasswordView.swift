@@ -109,7 +109,7 @@ struct CreatePasswordView: View {
     private var signUpButton: some View {
         Button(action: {
             Task {
-                if  await viewModel.didTapSignUp() {
+                if await viewModel.didTapSignUp() {
                     navigation.navigate(to: .start)
                 }
             }
