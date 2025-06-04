@@ -50,9 +50,6 @@ struct TabBarView: View {
                 item(imageName: "person", page: .profile)
             }
         }
-        .onAppear {
-            vm.fetchUser()
-        }
     }
 }
 

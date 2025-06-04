@@ -1,5 +1,5 @@
 //
-//  CreatePasswordView.swift
+//  CreateAccountView.swift
 //  ZEREK-ios
 //
 //  Created by bakebrlk on 07.03.2025.
@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct CreatePasswordView: View {
-    @EnvironmentObject private var viewModel: RegistryViewModel
+struct CreateAccountView: View {
+    @EnvironmentObject private var viewModel: RegistrationViewModel
     @EnvironmentObject var navigation: Navigation
 
     private var navigationBar: some View {
@@ -50,71 +50,57 @@ struct CreatePasswordView: View {
         .padding(.top)
     }
     
-    private var password: some View {
+    private var firstName: some View {
         VStack {
-            Text("Password")
+            Text("First Name")
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.system(size: 15))
             
-            HStack {
-                if viewModel.isSecure {
-                    SecureField("Your password", text: $viewModel.info.password)
-                        .autocorrectionDisabled()
-                }else {
-                    TextField("Your password", text: $viewModel.info.password)
-                        .autocorrectionDisabled()
-                }
-                Button(action: {
-                    viewModel.isSecure.toggle()
-                }, label: {
-                    Image(systemName: !viewModel.isSecure ? "eye" : "eye.slash")
-                        .foregroundColor(Color(.systemGray3))
-                })
-            }
-            .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(16)
+            TextField("First Name", text: $viewModel.info.firstName)
+                .autocorrectionDisabled()
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(16)
         }
         .padding()
     }
     
-    private var confirmPassword: some View {
+    private var lastName: some View {
         VStack {
-            Text("Confirm Password")
+            Text("Last Name")
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.system(size: 15))
             
-            HStack {
-                if viewModel.isSecure {
-                    SecureField("Confirm Password", text: $viewModel.confirmPassword)
-                        .autocorrectionDisabled()
-                }else {
-                    TextField("Confirm Password", text: $viewModel.confirmPassword)
-                        .autocorrectionDisabled()
-                }
-                Button(action: {
-                    viewModel.isSecure.toggle()
-                }, label: {
-                    Image(systemName: !viewModel.isSecure ? "eye" : "eye.slash")
-                        .foregroundColor(Color(.systemGray3))
-                })
-            }
-            .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(16)
+            TextField("Last Name", text: $viewModel.info.lastName)
+                .autocorrectionDisabled()
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(16)
         }
         .padding(.horizontal)
     }
     
-    private var signUpButton: some View {
+    private var email: some View {
+        VStack {
+            Text("Email Address")
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.system(size: 15))
+            
+            TextField("Your email", text: $viewModel.info.email)
+                .autocorrectionDisabled()
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(16)
+                .textInputAutocapitalization(.never)
+        }
+        .padding()
+    }
+    
+    private var continueButton: some View {
         Button(action: {
-            Task {
-                if await viewModel.didTapSignUp() {
-                    navigation.navigate(to: .start)
-                }
-            }
+            navigation.navigate(to: .createPassword)
         }, label: {
-            Text("Signup")
+            Text("Continue")
                 .padding()
                 .frame(maxWidth: .infinity)
                 .foregroundColor(.white)
@@ -147,19 +133,18 @@ struct CreatePasswordView: View {
             navigationBar
             title
             
-            password
-            confirmPassword
+            firstName
+            lastName
             
-            Spacer()
-            signUpButton
+            email
+            continueButton
+            
             loginButton
-            
             Spacer()
         }
     }
 }
 
-
 #Preview {
-    CreatePasswordView()
+    CreateAccountView()
 }

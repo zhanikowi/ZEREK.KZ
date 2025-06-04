@@ -10,6 +10,7 @@ import SwiftUI
 struct LevelSelectTranslateView: View {
     let item: CorrectTranslationsItem
     var onContinue: () -> Void
+    var onWrong: () -> Void
     
     @State private var selectedAnswer: Int?
     @State private var showAnswer: Bool = false
@@ -73,10 +74,13 @@ struct LevelSelectTranslateView: View {
                 
                 Button(action: {
                     if showAnswer {
-                        onContinue()
+                        if selectedAnswer == item.correctIndex {
+                            onContinue()
+                        } else {
+                            onWrong()
+                        }
                     } else {
-                        showAnswer
-                            .toggle()
+                        showAnswer = true
                     }
                 }) {
                     Text("Continue")

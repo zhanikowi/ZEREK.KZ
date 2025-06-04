@@ -8,15 +8,11 @@
 import SwiftUI
 
 struct StartView: View {
-    @EnvironmentObject private var viewModel: RegistryViewModel
+    @EnvironmentObject private var viewModel: RegistrationViewModel
     @EnvironmentObject private var navigation: Navigation
 
     var body: some View {
         VStack {
-            RoundedRectangle(cornerRadius: 1)
-                .frame(maxWidth: .infinity, maxHeight: 64)
-                .foregroundColor(Color(red: 125/255, green: 128/255, blue: 218/255))
-                .ignoresSafeArea()
             Spacer()
             
             Image("6")
@@ -25,7 +21,7 @@ struct StartView: View {
                 .frame(maxWidth: 170)
             
             VStack {
-                Text("Hello \(viewModel.info.firstName)! ✋")
+                Text("Hello \(viewModel.info.firstName)✋")
                 Text("Welcome to Zerek")
             }
             .font(.system(size: 24, weight: .medium))

@@ -14,6 +14,7 @@ struct TeachersModel: Identifiable {
 }
 
 struct VideoCallView: View {
+    @StateObject private var viewModel = VideoCallViewModel()
     @State private var showTeacherList = false
     @State private var selectedTeacher: TeachersModel?
     
@@ -24,72 +25,95 @@ struct VideoCallView: View {
     ]
     
     private let calls: [VideoCallModel] = [
-        .init(callName: "Call 1", callDuration: "34 min"),
-        .init(callName: "Call 2", callDuration: "22 min"),
-        .init(callName: "Call 3", callDuration: "18 min")
+        .init(callName: "Gaisha Aripkhan", callDuration: "3 min"),
+        .init(callName: "Gulzhanat Toraliyeva", callDuration: "4 min"),
+        .init(callName: "Nuray Zhumabay", callDuration: "1 min")
     ]
     
     var body: some View {
-        VStack(spacing: 16) {
-            ZStack {
-                Color.purple
-                    .ignoresSafeArea(edges: .top)
-                    .frame(height: 300)
-                
-                ZStack(alignment: .bottomLeading) {
-                    Image("videocall")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 320, height: 220)
-                        .cornerRadius(16)
+        ZStack {
+            VStack(spacing: 16) {
+                ZStack {
+                    Constant.purple
+                        .ignoresSafeArea(edges: .top)
+                        .frame(height: 300)
                     
-                    Button {
-                        showTeacherList = true
-                    } label: {
-                        Constant.getText(text: "Start", font: .regular, size: 20)
-                            .frame(width: 120, height: 44)
-                            .background(Color.black.opacity(0.7))
-                            .foregroundColor(.white)
-                            .cornerRadius(12)
-                    }
-                    .padding(.bottom, 16)
-                }
-            }
-            
-            Text("Call history")
-                .font(.system(size: 24, weight: .bold))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 16)
-                .padding(.top, 16)
-            
-            ScrollView {
-                VStack(spacing: 16) {
-                    ForEach(calls) { call in
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(call.callName)
-                                .font(.system(size: 20, weight: .bold))
+                    ZStack(alignment: .bottomLeading) {
+                        Image("videocall")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 320, height: 220)
+                            .cornerRadius(16)
+                        
+                        Button {
+                            showTeacherList = true
+                        } label: {
+                            Constant.getText(text: "Start", font: .regular, size: 20)
+                                .frame(width: 120, height: 44)
+                                .background(Color.black.opacity(0.7))
                                 .foregroundColor(.white)
-                            
-                            Text(call.callDuration)
-                                .font(.system(size: 16))
-                                .foregroundColor(.white.opacity(0.9))
+                                .cornerRadius(12)
                         }
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.yellow)
-                        .cornerRadius(20)
-                        .padding(.horizontal, 16)
+                        .padding(.bottom, 16)
                     }
                 }
-                .padding(.top, 8)
+                
+                Text("Call history")
+                    .font(.system(size: 24, weight: .bold))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                
+                ScrollView {
+                    VStack(spacing: 16) {
+                        ForEach(calls) { call in
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(call.callName)
+                                    .font(.system(size: 20, weight: .bold))
+                                    .foregroundColor(.white)
+                                
+                                Text(call.callDuration)
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.white.opacity(0.9))
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.yellow)
+                            .cornerRadius(20)
+                            .padding(.horizontal, 16)
+                        }
+                    }
+                    .padding(.top, 8)
+                }
+                
+                Spacer()
+            }
+            .sheet(isPresented: $showTeacherList) {
+                TeacherSelectionFullScreenView(teachers: teachers) { teacher in
+                    showTeacherList = false
+                    viewModel.tryToStartCall(phoneNumber: teacher.phoneNumber) {
+                        startFaceTime(phoneNumber: teacher.phoneNumber)
+                    }
+                }
+            }
+            .task {
+                await viewModel.loadUser()
             }
             
-            Spacer()
-        }
-        .sheet(isPresented: $showTeacherList) {
-            TeacherSelectionFullScreenView(teachers: teachers) { teacher in
-                showTeacherList = false
-                startFaceTime(phoneNumber: teacher.phoneNumber)
+            if viewModel.showAlert {
+                Color.black.opacity(0.5)
+                    .ignoresSafeArea()
+                
+                CustomAlertView(
+                    title: "Attention",
+                    message: viewModel.alertMessage,
+                    buttonTitle: "OK"
+                ) {
+                    withAnimation {
+                        viewModel.showAlert = false
+                    }
+                }
+                .transition(.scale)
             }
         }
     }
@@ -112,13 +136,13 @@ struct VideoCallView: View {
 struct TeacherSelectionFullScreenView: View {
     let teachers: [TeachersModel]
     let onSelect: (TeachersModel) -> Void
-
+    
     @Environment(\.dismiss) private var dismiss
-
+    
     var body: some View {
         ZStack {
             Color.clear.ignoresSafeArea()
-
+            
             VStack {
                 ZStack {
                     HStack {
@@ -142,7 +166,7 @@ struct TeacherSelectionFullScreenView: View {
                 }
                 
                 Spacer()
-
+                
                 VStack(spacing: 16) {
                     ForEach(teachers) { teacher in
                         Button {
@@ -156,13 +180,13 @@ struct TeacherSelectionFullScreenView: View {
                                 .background(Color.white)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 12)
-                                        .stroke(Color.purple, lineWidth: 1)
+                                        .stroke(Constant.purple, lineWidth: 1)
                                 )
                         }
                     }
                 }
                 .padding(24)
-
+                
                 Spacer()
             }
         }

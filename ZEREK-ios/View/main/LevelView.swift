@@ -48,7 +48,6 @@ struct LevelView: View {
                 )
         }
         .frame(maxWidth: .infinity, alignment: alignment.alignment)
-        .disabled(backgroundColor == Constant.gray)
     }
 }
 

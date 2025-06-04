@@ -16,12 +16,46 @@ struct UserModel: Codable, Identifiable {
     let languageLevel: String
     let age: String
     let purpose: String
-    var money: Int? = 50
-    var life: Int? = 5
-    var level: Int? = 1
-    var rank: Int? = 25
-    var activeDay: Int? = 22
-    var achievements: [UserAchievements]? = []
+    var completedUnits: [String]
+    let rank: Int
+    let activityDays: [String]
+    let lastActiveDate: Date
+    var money: Int
+    let life: Int
+    
+    var points: Int {
+        completedUnits.count * 20
+    }
+    
+    init(
+        id: String,
+        firstName: String,
+        lastName: String,
+        email: String,
+        languageLevel: String,
+        age: String,
+        purpose: String,
+        completedUnits: [String],
+        rank: Int,
+        activityDays: [String],
+        lastActiveDate: Date,
+        money: Int,
+        life: Int
+    ) {
+        self.id = id
+        self.firstName = firstName
+        self.lastName = lastName
+        self.email = email
+        self.languageLevel = languageLevel
+        self.age = age
+        self.purpose = purpose
+        self.completedUnits = completedUnits
+        self.rank = rank
+        self.activityDays = activityDays
+        self.lastActiveDate = lastActiveDate
+        self.money = money
+        self.life = life
+    }
     
     init() {
         self.id = ""
@@ -31,71 +65,12 @@ struct UserModel: Codable, Identifiable {
         self.languageLevel = ""
         self.age = ""
         self.purpose = ""
-    }
-    
-    init(id: String, firstName: String, lastName: String, email: String, languageLevel: String, age: String, purpose: String) {
-        self.id = id
-        self.firstName = firstName
-        self.lastName = lastName
-        self.email = email
-        self.languageLevel = languageLevel
-        self.age = age
-        self.purpose = purpose
-        self.activeDay = 22
-        self.achievements = [
-            UserAchievements(title: "Smooth Talker", imageName: "GlowingStar"),
-            UserAchievements(title: "Daily Streak Keeper", imageName: "Trophy"),
-            UserAchievements(title: "Fast learner", imageName: "Warranty"),
-            UserAchievements(title: "Smooth Talker", imageName: "GlowingStar"),
-            UserAchievements(title: "Daily Streak Keeper", imageName: "Trophy"),
-            UserAchievements(title: "Fast learner", imageName: "Warranty")
-            
-        ]
-    }
-    
-    init?(dictionary: [String : Any]) {
-        guard let id = dictionary["id"] as? String,
-              let firstName = dictionary["firstName"] as? String,
-              let lastName = dictionary["lastName"] as? String,
-              let email = dictionary["email"] as? String,
-              let languageLevel = dictionary["languageLevel"] as? String,
-              let age = dictionary["age"] as? String,
-              let purpose = dictionary["purpose"] as? String
-        else {
-            return nil
-        }
-        
-        if let money = dictionary["money"] as? Int {
-            self.money = money
-        }
-        
-        if let life = dictionary["life"] as? Int{
-            self.life = life
-        }
-        
-        if let level = dictionary["level"] as? Int{
-            self.level = level
-        }
-        
-        if let rank = dictionary["rank"] as? Int{
-            self.rank = rank
-        }
-        
-        if let activeDay = dictionary["activeDay"] as? Int {
-            self.activeDay = activeDay
-        }
-        
-        if let achievements = dictionary["achievements"] as? [UserAchievements] {
-            self.achievements = achievements
-        }
-        
-        self.id = id
-        self.firstName = firstName
-        self.lastName = lastName
-        self.email = email
-        self.languageLevel = languageLevel
-        self.age = age
-        self.purpose = purpose
+        self.completedUnits = []
+        self.rank = 0
+        self.activityDays = []
+        self.lastActiveDate = Date.now
+        self.money = 0
+        self.life = 0
     }
 }
 

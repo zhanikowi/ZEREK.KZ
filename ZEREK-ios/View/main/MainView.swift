@@ -9,20 +9,20 @@ import SwiftUI
 
 struct MainView: View {
     
-    @State private var selectedUnit: Units? = nil
+    @State private var selectedUnit: UnitsModel? = nil
 
-    @StateObject private var vm = MainViewModel()
+    @EnvironmentObject private var viewModel: MainViewModel
     
     var body: some View {
         ZStack {
             VStack {
                 navigationBar
                 
-                if vm.isLoading {
+                if viewModel.isLoading {
                     Spacer()
                     ProgressView("Loading...")
                         .padding()
-                } else if let error = vm.errorMessage {
+                } else if let error = viewModel.errorMessage {
                     Spacer()
                     Text("Ошибка: \(error)")
                         .foregroundColor(.red)
@@ -34,19 +34,20 @@ struct MainView: View {
                 Spacer()
             }
             .task {
-                await vm.fetchUnits()
+                await viewModel.loadInitialData()
             }
         }
         .background(Color.white)
-        .fullScreenCover(item: $selectedUnit) { unit in
-            LevelContainerView(unit: unit)
+        .fullScreenCover(item: $selectedUnit) { unitModel in
+            LevelContainerView(unitModel: unitModel)
+                .environmentObject(viewModel)
         }
     }
     
     private var navigationBar: some View {
         HStack {
             Image("money").configure.frame(maxWidth: 25)
-            Constant.getText(text: vm.user.money?.toString ?? "", font: .regular, size: 20)
+            Constant.getText(text: "\(viewModel.user.money)", font: .regular, size: 20)
                 .foregroundColor(Constant.gold)
             
             Spacer()
@@ -54,7 +55,7 @@ struct MainView: View {
             Spacer()
             
             Image("heart").configure.frame(maxWidth: 25)
-            Constant.getText(text: vm.user.life?.toString ?? "", font: .regular, size: 20)
+            Constant.getText(text: "\(viewModel.lives)", font: .regular, size: 20)
         }
         .padding(.horizontal)
     }
@@ -95,14 +96,15 @@ struct MainView: View {
             ScrollView {
                 ZStack {
                     VStack(spacing: 0) {
-                        ForEach(vm.allunits) { unit in
+                        ForEach(viewModel.units) { unit in
                             LevelView(
                                 level: unit,
                                 alignment: levelViewAlignment(queue: unit.queue),
-                                backgroundColor: Constant.purple) {
-                                    selectedUnit = unit.units.first
-                                }
-                                .frame(height: 100)
+                                backgroundColor: viewModel.completedUnitKeys.contains(unit.iconName) ? Constant.purple : Constant.gray
+                            ) {
+                                selectedUnit = unit
+                            }
+                            .frame(height: 100)
                         }
                     }
                     .padding(.horizontal)
@@ -124,7 +126,7 @@ struct MainView: View {
     
     private func levelViewAlignment(queue: Int) -> LevelView.Alignment {
         let alignment: LevelView.Alignment
-        switch (queue - 1) % 4 {
+        switch queue % 4 {
             case 0: alignment = .right
             case 1, 3: alignment = .center
             case 2: alignment = .left

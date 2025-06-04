@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct LoginView: View {
-    @EnvironmentObject private var viewModel: RegistryViewModel
+    @EnvironmentObject private var viewModel: RegistrationViewModel
     @EnvironmentObject var navigation: Navigation
+
+    @State private var isLoading = false
 
     private var navigationBar: some View {
         ZStack {
@@ -67,6 +69,7 @@ struct LoginView: View {
                 .padding()
                 .background(Color(.systemGray6))
                 .cornerRadius(16)
+                .textInputAutocapitalization(.never)
         }
         .padding()
     }
@@ -115,23 +118,37 @@ struct LoginView: View {
     
     private var loginButton: some View {
         Button(action: {
+            isLoading = true
             Task {
-                if await viewModel.didTapLogin() {
+                let success = await viewModel.didTapLogin()
+                isLoading = false
+                if success {
                     navigation.navigate(to: .start)
                 } else {
                     print("No login")
                 }
             }
         }, label: {
-            Text("Login")
-                .padding()
-                .frame(maxWidth: .infinity)
-                .foregroundColor(.white)
-                .background(Color(red: 91/255, green: 123/255, blue: 254/255))
-                .font(.system(size: 20, weight: .medium))
-                .cornerRadius(16)
-                .padding(.horizontal)
+            if isLoading {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color(red: 91/255, green: 123/255, blue: 254/255))
+                    .cornerRadius(16)
+                    .padding(.horizontal)
+            } else {
+                Text("Login")
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .foregroundColor(.white)
+                    .background(Color(red: 91/255, green: 123/255, blue: 254/255))
+                    .font(.system(size: 20, weight: .medium))
+                    .cornerRadius(16)
+                    .padding(.horizontal)
+            }
         })
+        .disabled(isLoading)
         .padding(.top, 40)
     }
     
@@ -165,6 +182,18 @@ struct LoginView: View {
             signUpButton
             Spacer()
         }
+        .overlay {
+            if isLoading {
+                ZStack {
+                    Color.black.opacity(0.3).ignoresSafeArea()
+                    ProgressView("Logging in...")
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(12)
+                }
+            }
+        }
+
     }
 }
 

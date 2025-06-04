@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RegistryPurposeView: View {
-    @EnvironmentObject private var viewModel: RegistryViewModel
+    @EnvironmentObject private var viewModel: RegistrationViewModel
     @EnvironmentObject var navigation: Navigation
 
     var body: some View {
