@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct ProfileView: View {
-    @EnvironmentObject private var vm: MainViewModel
     @EnvironmentObject var navigation: Navigation
-
+    @StateObject private var profileViewModel = ProfileViewModel()
+    
     private var bg: some View {
         VStack {
             WaveShape()
@@ -25,7 +25,6 @@ struct ProfileView: View {
         ZStack {
             HStack {
                 Spacer()
-                
                 Button {
                     navigation.navigate(to: .settings)
                 } label: {
@@ -34,7 +33,6 @@ struct ProfileView: View {
                         .frame(maxWidth: Constant.radius, maxHeight: Constant.radius)
                 }
             }
-
             Constant.getText(text: "Profile", font: .bold, size: Constant.radius)
         }
         .foregroundColor(.white)
@@ -47,17 +45,13 @@ struct ProfileView: View {
             Image("Profile")
                 .configure
                 .padding([.top, .horizontal], Constant.radius/2)
-                .frame(maxWidth: Constant.radius * 5, maxHeight:  Constant.radius * 5)
-                .background(
-                    Circle()
-                        .fill(Color(.systemGray4))
-                )
+                .frame(maxWidth: Constant.radius * 5, maxHeight: Constant.radius * 5)
+                .background(Circle().fill(Color(.systemGray4)))
             
             VStack(alignment: .leading) {
-                Constant.getText(text: vm.user.firstName + " " + vm.user.lastName,
+                Constant.getText(text: profileViewModel.userName,
                                  font: .bold,
                                  size: 19)
-                
                 Constant.getText(text: "Native language: English", font: .regular, size: 14)
             }
             .frame(maxWidth: Constant.width/2)
@@ -69,19 +63,12 @@ struct ProfileView: View {
             VStack {
                 Image("kz").configure
                     .frame(maxWidth: Constant.radius, maxHeight: Constant.radius)
-                
-                Constant.getText(text: vm.user.languageLevel, font: .regular, size: 20)
-                    .foregroundColor(Constant.gold)
+                Constant.getText(text: profileViewModel.languageLevel,
+                                 font: .regular, size: 20)
+                .foregroundColor(Constant.gold)
             }
         }
         .padding(.horizontal, Constant.radius)
-    }
-    
-    private var progressView: some View {
-        RingProgressView(progress: 0.58)
-            .padding(Constant.radius)
-            .frame(maxWidth: Constant.width/2.8)
-            .cornerRadius(Constant.radius)
     }
     
     private func userProgressConfigure(title: String, image: Image, score: String) -> some View {
@@ -97,7 +84,7 @@ struct ProfileView: View {
         }
         .padding(.vertical,Constant.radius)
         .padding(.horizontal, Constant.radius)
-        .frame(maxWidth: Constant.width/3.3, maxHeight: UIScreen.main.bounds.height/11.6)
+        .frame(maxWidth: Constant.width / 3.3, maxHeight: UIScreen.main.bounds.height / 11.6)
         .background(Constant.purple)
         .foregroundColor(.white)
         .cornerRadius(Constant.radius/2)
@@ -108,19 +95,19 @@ struct ProfileView: View {
             userProgressConfigure(
                 title: "Completed level",
                 image: Image("biceps-flexed"),
-                score: "\(vm.user.level ?? 1)"
+                score: "\(profileViewModel.levelProgress)"
             )
             
             userProgressConfigure(
                 title: "Score",
                 image: Image("money"),
-                score: "\(vm.user.money ?? 0)"
+                score: "\(profileViewModel.money)"
             )
             
             userProgressConfigure(
                 title: "Words",
                 image: Image(systemName: "book"),
-                score: "\(vm.user.rank ?? 0)"
+                score: "\(10)"
             )
         }
     }
@@ -136,16 +123,30 @@ struct ProfileView: View {
             )
     }
     
+    private var progressView: some View {
+        RingProgressView(progress: profileViewModel.levelProgress)
+            .padding(Constant.radius)
+            .frame(maxWidth: Constant.width/2.8)
+            .cornerRadius(Constant.radius)
+    }
+    
     private var dailyActivity: some View {
-        VStack {
+        VStack(alignment: .leading) {
             Constant.getText(text: "Your daily activity", font: .bold, size: 17)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            
             HStack(spacing: Constant.radius) {
-                ForEach(1...7, id: \.self) { day in
-                    dailyStatus(status: vm.user.activeDay ?? 0 > day)
+                let days = profileViewModel.getLast7Days()
+                
+                ForEach(days, id: \.self) { date in
+                    let isActive = profileViewModel.activityDays.contains(date)
+                    Image(isActive ? "flame" : "x")
+                        .configure
+                        .padding(Constant.radius * 0.1)
+                        .frame(maxWidth: Constant.radius * 1.5)
+                        .background(Circle().fill(Constant.purple.opacity(0.8)))
                 }
             }
-            .padding(.top, Constant.radius/2)
+            .padding(.top, Constant.radius / 2)
             
             HStack {
                 Image(systemName: "calendar")
@@ -153,10 +154,10 @@ struct ProfileView: View {
                     .frame(maxWidth: Constant.radius * 1.3)
                     .foregroundColor(.black)
                 
-                Constant.getText(text: "\(vm.user.activeDay ?? 0) active days",
+                Constant.getText(text: "\(profileViewModel.activityDays.count) active days",
                                  font: .regular, size: 12)
             }
-            .padding(.top, Constant.radius/2)
+            .padding(.top, Constant.radius / 2)
         }
         .padding([.top, .horizontal], Constant.radius)
     }
@@ -180,31 +181,27 @@ struct ProfileView: View {
     
     private var achievements: some View {
         Group {
-            if let achievements: [UserAchievements] = vm.user.achievements {
-                VStack {
-                    Constant.getText(text: "Achievements", font: .bold, size: 17)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
-                            ForEach(achievements) { achievement in
-                                achievementsConfigure(achievement: achievement)
-                            }
+            VStack {
+                Constant.getText(text: "Achievements", font: .bold, size: 17)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(profileViewModel.achievements) { achievement in
+                            achievementsConfigure(achievement: achievement)
                         }
                     }
                 }
-                .padding([.top, .horizontal], Constant.radius)
-            }else {
-                VStack{}
             }
+            .padding([.top, .horizontal], Constant.radius)
+            
         }
     }
     
     var body: some View {
         ZStack {
             bg
-            
-            if vm.isAuthorized {
+            if profileViewModel.isAuthorized {
                 VStack {
                     topBar
                     profileInfoView
@@ -233,6 +230,10 @@ struct ProfileView: View {
                     Spacer()
                 }
             }
+        }
+        .task {
+            await profileViewModel.fetchUserProfile()
+            await profileViewModel.fetchCompletedAndActivityDays()
         }
         .ignoresSafeArea()
         .frame(maxWidth: .infinity, maxHeight: .infinity)

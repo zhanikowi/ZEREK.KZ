@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RespectView: View {
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject private var vm: MainViewModel = MainViewModel()
+    @EnvironmentObject private var vm: MainViewModel
 
     private var title: some View {
         Constant.getText(text: vm.respectText, font: .bold, size: 24)

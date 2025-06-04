@@ -11,17 +11,15 @@ struct DictionaryView: View {
     var onAllCardsRemoved: () -> Void
     @Environment(\.dismiss) private var dismiss
     
-    @State private var cards: [Cards] = [
-        Cards(word: "Кітап", translation: "Book"),
-        Cards(word: "Cынып", translation: "Group"),
-        Cards(word: "Дәптер", translation: "Notebook"),
-        Cards(word: "Мектеп", translation: "School"),
-        Cards(word: "Біз", translation: "We")
-    ]
-    
+    @State private var words: [AudioDictionaryModel]
     @State private var initialCardsCount: Int = 0
     @State private var progressValue: CGFloat = 0.0
     
+    init(words: [AudioDictionaryModel], onAllCardsRemoved: @escaping () -> Void) {
+        self._words = State(initialValue: words)
+        self.onAllCardsRemoved = onAllCardsRemoved
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             navigationProgressBar(
@@ -35,7 +33,7 @@ struct DictionaryView: View {
             Spacer()
             
             ZStack {
-                ForEach(Array(cards.enumerated()), id: \.element.id) { (offsetIndex, card) in
+                ForEach(Array(words.enumerated()), id: \.element.id) { (offsetIndex, card) in
                     DictionaryCardView(
                         card: card,
                         onRemove: {
@@ -53,30 +51,30 @@ struct DictionaryView: View {
                 .frame(width: 300, height: 85)
             
             Spacer()
-        }.onAppear {
+        }
+        .onAppear {
             if initialCardsCount == 0 {
-                initialCardsCount = cards.count
+                initialCardsCount = words.count
             }
         }
     }
     
     private func removeCard(at index: Int) {
-        guard !cards.isEmpty else { return }
+        guard !words.isEmpty else { return }
 
-        let removedCard = cards.remove(at: index)
-        print("\(removedCard.word) removed")
+        words.remove(at: index)
 
         if initialCardsCount > 0 {
-            let removedCount = initialCardsCount - cards.count
+            let removedCount = initialCardsCount - words.count
             progressValue = CGFloat(removedCount) / CGFloat(initialCardsCount)
         }
 
-        if cards.isEmpty {
+        if words.isEmpty {
             onAllCardsRemoved()
         }
     }
-
 }
+
 
 extension DictionaryView {
     public func navigationProgressBar(progressValue: CGFloat, action: @escaping () -> Void) -> some View {
@@ -89,7 +87,7 @@ extension DictionaryView {
     
     private func progressView(progressValue : CGFloat) -> some View {
         LinearProgressView(value: progressValue, shape: Capsule())
-            .tint(Color.purple)
+            .tint(Constant.purple)
             .frame(maxWidth: .infinity, maxHeight: 8)
             .padding(.horizontal, 4)
     }
@@ -104,8 +102,4 @@ extension DictionaryView {
                 .foregroundColor(.primary)
         }
     }
-}
-
-#Preview {
-    DictionaryView {}
 }

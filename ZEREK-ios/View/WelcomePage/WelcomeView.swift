@@ -13,10 +13,6 @@ struct WelcomeView: View {
     
     var body: some View {
         VStack {
-            RoundedRectangle(cornerRadius: 1)
-                .frame(maxWidth: .infinity, maxHeight: 64)
-                .foregroundColor(Color(red: 125/255, green: 128/255, blue: 218/255))
-                .ignoresSafeArea()
             Spacer()
             
             Constant.getText(text: "Welcome to Zerek", font: .bold, size: 22)

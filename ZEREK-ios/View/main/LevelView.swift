@@ -11,28 +11,29 @@ struct LevelView: View {
     enum Alignment {
         case left
         case right
-        
-        var edge: Edge.Set {
+        case center
+
+        var alignment: SwiftUI.Alignment {
             switch self {
-            case .left: return .trailing
-            case .right: return .leading
+            case .left: return .leading
+            case .right: return .trailing
+            case .center: return .center
             }
         }
     }
     
-    let level: LevelModel
+    let level: UnitsModel
     let alignment: Alignment
-    let padding: CGFloat
     let backgroundColor: Color
+    let onTap: () -> Void
     
     var body: some View {
         Button {
-            print(level.id)
+            onTap()
         } label: {
-            Image(level.image)
+            Image(level.iconName)
                 .resizable()
                 .frame(maxWidth: 70)
-                .padding(.bottom)
                 .background(
                     ZStack {
                         RoundedRectangle(cornerRadius: 25, style: .continuous)
@@ -44,9 +45,9 @@ struct LevelView: View {
                             .fill(backgroundColor)
                             .frame(width: 70, height: 65)
                     }
-                )        }
-        .padding(alignment.edge, padding)
-        .disabled(backgroundColor == Constant.gray)
+                )
+        }
+        .frame(maxWidth: .infinity, alignment: alignment.alignment)
     }
 }
 

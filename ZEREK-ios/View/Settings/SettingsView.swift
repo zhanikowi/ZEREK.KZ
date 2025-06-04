@@ -119,17 +119,15 @@ struct SettingsView: View {
             itemConfigure(systemImageName: "bell.badge", title: "Notifications",count: 1 ,isButton: true){
                 navigation.navigate(to: .notification)
             }
-            
             itemConfigure(systemImageName: "exclamationmark.shield", title: "Privacy policy", isButton: true){
                 navigation.navigate(to: .privacy)
             }
             itemConfigure(systemImageName: "trash", title: "Delete My Account", isButton: true){
                 navigation.navigate(to: .deleteAccount)
             }
-            
             itemConfigure(systemImageName: "rectangle.portrait.and.arrow.right", title: "Log out"){
                 vm.signOut()
-                navigation.navigate(to: .start)
+                navigation.navigate(to: .signIn)
             }
         }
         .padding(.top, Constant.radius * 3)

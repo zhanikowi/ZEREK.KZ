@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DictionaryCardView: View {
-    let card: Cards
+    let card: AudioDictionaryModel
     let onRemove: () -> Void
     
     @State private var isFlipped = false
@@ -46,7 +46,7 @@ struct DictionaryCardView: View {
                 VStack(spacing: 12) {
                     Text(card.translation)
                         .font(.largeTitle)
-                        .foregroundColor(.purple)
+                        .foregroundColor(Constant.purple)
                         .bold()
                     
                     Text(card.word)
@@ -82,14 +82,14 @@ struct DictionaryCardView: View {
     }
     
     private func swipeCard(width: CGFloat) {
-            switch width {
-            case -500...(-150), 150...500:
-                offset = CGSize(width: width > 0 ? 500 : -500, height: 0)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    onRemove()
-                }
-            default:
-                offset = .zero
+        switch width {
+        case -500...(-150), 150...500:
+            offset = CGSize(width: width > 0 ? 500 : -500, height: 0)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                onRemove()
             }
+        default:
+            offset = .zero
         }
+    }
 }

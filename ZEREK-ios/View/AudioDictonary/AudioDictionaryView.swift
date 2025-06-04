@@ -9,100 +9,113 @@ import SwiftUI
 import AVFoundation
 
 struct AudioDictionaryView: View {
+    @StateObject private var viewModel = AudioDictionaryViewModel()
     @State private var audioPlayer: AVAudioPlayer?
     @State private var showDictionary = false
     @State private var showRespect = false
-
-    private let words: [AudioDictionaryModel] = [
-        .init(word: "кітап", translation: "book", audioFileName: "book.mp3"),
-        .init(word: "сынып", translation: "group", audioFileName: "group.mp3"),
-        .init(word: "дәптер", translation: "notebook", audioFileName: "notebook.mp3"),
-        .init(word: "мектеп", translation: "school", audioFileName: "school.mp3"),
-        .init(word: "біз", translation: "we", audioFileName: "we.mp3")
-    ]
-
+    
     var body: some View {
-        VStack(spacing: 16) {
+        ScrollView {
             ZStack {
-                Color.purple
+                Constant.purple
                     .ignoresSafeArea(edges: .top)
-                    .frame(height: 200)
-
+                    .frame(height: 275)
+                
                 VStack(spacing: 16) {
-                    Image("letsLearn")
-                        .resizable()
-                        .frame(width: 320, height: 80)
-
-                    Button {
-                        showDictionary = true
-                    } label: {
-                        Constant.getText(text: "Start", font: .bold, size: 24)
-                            .padding(Constant.radius)
-                            .frame(maxWidth: .infinity)
-                            .background(Constant.gold)
-                            .foregroundColor(.white)
-                    }
-                    .cornerRadius(Constant.radius)
-                    .padding(.horizontal, 16)
-                }
-            }
-
-            VStack(spacing: 0) {
-                ForEach(words) { word in
-                    HStack(spacing: 12) {
+                    Spacer()
+                    
+                    VStack(spacing: 16) {
+                        Image("letsLearn")
+                            .resizable()
+                            .frame(width: 320, height: 80)
+                        
                         Button {
-                            playSound(named: word.audioFileName)
+                            showDictionary = true
                         } label: {
-                            Image("audio")
-                                .resizable()
-                                .frame(width: 38, height: 38)
-                                .foregroundColor(.purple)
+                            Constant.getText(text: "Start", font: .bold, size: 24)
+                                .padding(Constant.radius)
+                                .frame(maxWidth: .infinity)
+                                .background(Constant.gold)
+                                .foregroundColor(.white)
                         }
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(word.word)
-                                .font(.system(size: 19, weight: .bold))
-                            Text(word.translation)
-                                .font(.system(size: 17))
-                        }
-
-                        Spacer()
+                        .cornerRadius(Constant.radius)
+                        .padding(.horizontal, 16)
                     }
-                    .frame(height: 75)
-                    .padding(.horizontal, 12)
-
-                    if word.id != words.last?.id {
-                        Divider()
-                            .padding(.leading, 62)
+                    
+                    Spacer()
+                }
+                .padding(.top, 32)
+            }
+            
+            if viewModel.isLoading {
+                ProgressView("Loading...")
+                    .padding()
+            } else if let error = viewModel.error {
+                Text(error)
+                    .foregroundColor(.red)
+                    .multilineTextAlignment(.center)
+                    .padding()
+            } else {
+                Spacer()
+                
+                VStack(spacing: 0) {
+                    ForEach(viewModel.words) { word in
+                        HStack(spacing: 12) {
+                            Button {
+                                playSound(named: word.audioFileName)
+                            } label: {
+                                Image("audio")
+                                    .resizable()
+                                    .frame(width: 38, height: 38)
+                                    .foregroundColor(Constant.purple)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(word.word)
+                                    .font(.system(size: 19, weight: .bold))
+                                Text(word.translation)
+                                    .font(.system(size: 17))
+                            }
+                            
+                            Spacer()
+                        }
+                        .frame(height: 75)
+                        .padding(.horizontal, 12)
+                        
+                        if word.id != viewModel.words.last?.id {
+                            Divider().padding(.leading, 62)
+                        }
                     }
                 }
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Constant.purple, lineWidth: 1)
+                )
+                .padding(.horizontal, 16)
             }
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color.purple, lineWidth: 1)
-            )
-            .padding(.horizontal, 16)
-
+            
             Spacer()
         }
         .fullScreenCover(isPresented: $showDictionary) {
-            DictionaryView {
+            DictionaryView(words: viewModel.words, onAllCardsRemoved: {
                 showDictionary = false
                 showRespect = true
-            }
+            })
         }
         .fullScreenCover(isPresented: $showRespect) {
             FinishDictionaryView()
         }
+        .ignoresSafeArea()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-
+    
     // MARK: - Audio
     private func playSound(named: String) {
         guard let url = Bundle.main.url(forResource: named, withExtension: nil) else {
             print("Audio file \(named) not found")
             return
         }
-
+        
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer?.play()

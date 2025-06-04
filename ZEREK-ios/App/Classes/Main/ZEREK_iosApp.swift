@@ -21,7 +21,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct ZEREK_iosApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @ObservedObject var navigation = Navigation()
-    @ObservedObject var registryViewModel: RegistryViewModel = RegistryViewModel.shared
+    @ObservedObject var registrationViewModel: RegistrationViewModel = RegistrationViewModel.shared
     @ObservedObject var mainViewModel: MainViewModel = MainViewModel()
     
     var body: some Scene {
@@ -39,7 +39,7 @@ struct ZEREK_iosApp: App {
                 }
             }
             .environmentObject(navigation)
-            .environmentObject(registryViewModel)
+            .environmentObject(registrationViewModel)
             .environmentObject(mainViewModel)
         }
     }
