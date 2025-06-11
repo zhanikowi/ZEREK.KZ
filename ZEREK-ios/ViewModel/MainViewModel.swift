@@ -125,4 +125,18 @@ extension MainViewModel {
         }
     }
 
+    func deleteAccount(password: String, navigation: Navigation) async {
+        isLoading = true
+        errorMessage = nil
+
+        do {
+            try await ServerManager.deleteAccount(password: password, email: user.email)
+            signOut()
+            navigation.navigate(to: .signIn)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+
+        isLoading = false
+    }
 }

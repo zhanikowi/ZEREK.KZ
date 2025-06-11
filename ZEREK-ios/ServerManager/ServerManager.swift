@@ -384,10 +384,10 @@ final class ServerManager {
                 completion(.failure(NSError(domain: "Failed to read money", code: 500)))
                 return
             }
-
+            
             currentMoney -= amount
             currentMoney = max(currentMoney, 0)
-
+            
             userRef.updateData(["money": currentMoney]) { error in
                 if let error = error {
                     completion(.failure(error))
@@ -397,5 +397,20 @@ final class ServerManager {
             }
         }
     }
-
+    
+    static func deleteAccount(password: String, email: String) async throws {
+        let user = Auth.auth().currentUser
+        
+        guard let email = user?.email else {
+            throw NSError(domain: "No current user", code: 401, userInfo: nil)
+        }
+        
+        let credential = EmailAuthProvider.credential(withEmail: email, password: password)
+        
+        try await user?.reauthenticate(with: credential)
+        
+        try await db.collection("users").document(user!.uid).delete()
+        
+        try await user?.delete()
+    }
 }

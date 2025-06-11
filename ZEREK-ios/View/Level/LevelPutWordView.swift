@@ -9,8 +9,8 @@ import SwiftUI
 
 struct LevelPutWordView: View {
     let item: FinishSentenceItem
-    
     var onContinue: () -> Void
+    var onWrong: () -> Void
 
     @State private var selectedWord: String = ""
     @State private var showAnswer: Bool = false
@@ -78,11 +78,15 @@ struct LevelPutWordView: View {
         }
         .padding(.horizontal, Constant.radius)
     }
-
+    
     private var continueButton: some View {
         Button(action: {
             if showAnswer {
-                onContinue()
+                if selectedWord == item.options[item.correctIndex] {
+                    onContinue()
+                } else {
+                    onWrong()
+                }
             } else {
                 showAnswer = true
             }

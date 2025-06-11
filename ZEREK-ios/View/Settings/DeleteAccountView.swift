@@ -50,18 +50,33 @@ struct DeleteAccountView: View {
     }
     
     private var deleteButton: some View {
-        Button {
-            
-        } label: {
-            Constant.getText(text: "Delete", font: .bold, size: 24)
-                .padding(Constant.radius)
-                .frame(maxWidth: .infinity)
-                .background(Color.red)
-                .foregroundColor(.white)
+        ZStack {
+            Button {
+                Task {
+                    await viewModel.deleteAccount(password: password, navigation: navigation)
+                }
+            } label: {
+                Constant.getText(text: "Delete", font: .bold, size: 24)
+                    .padding(Constant.radius)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.red)
+                    .foregroundColor(.white)
+            }
+            .cornerRadius(Constant.radius)
+            .padding(Constant.radius)
+            .disabled(viewModel.isLoading)
+
+            if viewModel.isLoading {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .frame(maxWidth: .infinity, maxHeight: 50)
+                    .background(Color.red.opacity(0.7))
+                    .cornerRadius(Constant.radius)
+                    .padding(Constant.radius)
+            }
         }
-        .cornerRadius(Constant.radius)
-        .padding(Constant.radius)
     }
+
     
     var body: some View {
         VStack {
@@ -69,10 +84,19 @@ struct DeleteAccountView: View {
             hint
             
             textField
+            
+            if let error = viewModel.errorMessage {
+                Text(error)
+                    .foregroundColor(.red)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+            }
+
             deleteButton
             Spacer()
         }
     }
+
 }
 
 #Preview {

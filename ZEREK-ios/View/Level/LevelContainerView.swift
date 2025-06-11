@@ -63,15 +63,15 @@ struct LevelContainerView: View {
                     }
                 case .putWord:
                     if let item = unit.finishSentence.first {
-                        LevelPutWordView(item: item, onContinue: goToNextLevel)
+                        LevelPutWordView(item: item, onContinue: goToNextLevel, onWrong: viewModel.loseLife)
                     }
                 case .selectSentence:
                     if let item = unit.makeSentence.first {
-                        LevelSelectAllSentenceView(item: item, onContinue: goToNextLevel)
+                        LevelSelectAllSentenceView(item: item, onContinue: goToNextLevel, onWrong: viewModel.loseLife)
                     }
                 case .fill:
                     if let item = unit.fillText.first {
-                        LevelFillView(item: item, onContinue: goToNextLevel)
+                        LevelFillView(item: item, onContinue: goToNextLevel, onWrong: viewModel.loseLife)
                     }
                 case .respect:
                     RespectView()

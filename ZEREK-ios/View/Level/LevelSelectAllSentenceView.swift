@@ -10,6 +10,7 @@ import SwiftUI
 struct LevelSelectAllSentenceView: View {
     let item: MakeSentenceItem
     var onContinue: () -> Void
+    var onWrong: () -> Void
     
     @State private var showAnswer: Bool = false
     @State private var answer: [String] = []
@@ -76,7 +77,7 @@ struct LevelSelectAllSentenceView: View {
     }
     
     private var words: some View {
-        let numberOfRows: CGFloat = 4
+        let numberOfRows: CGFloat = 3
         let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
         
         return LazyVGrid(columns: columns) {
@@ -89,8 +90,8 @@ struct LevelSelectAllSentenceView: View {
                 } label: {
                     Text(word)
                         .frame(maxWidth: Constant.width/numberOfRows)
-                        .padding(.horizontal, Constant.radius/4)
-                        .padding(.vertical, Constant.radius * 0.2)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 4)
                         .background(
                             RoundedRectangle(cornerRadius: Constant.radius/1.5)
                                 .stroke(Color(.systemGray4), lineWidth: 1)
@@ -109,7 +110,11 @@ struct LevelSelectAllSentenceView: View {
         
         return Button(action: {
             if showAnswer {
-                onContinue()
+                if userAnswer == item.correctSentence {
+                    onContinue()
+                } else {
+                    onWrong()
+                }
             } else {
                 showAnswer.toggle()
             }
@@ -145,7 +150,7 @@ struct LevelSelectAllSentenceView: View {
             } else {
                 HStack {
                     Constant.getText(text: "Right answer:", font: .bold, size: 24)
-                    Constant.getText(text: item.correctSentence, font: .regular, size: 24)
+                    Constant.getText(text: item.correctSentence, font: .regular, size: 20)
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
@@ -183,3 +188,21 @@ struct LevelSelectAllSentenceView: View {
         }
     }
 }
+
+
+#Preview {
+    LevelSelectAllSentenceView(
+        item: MakeSentenceItem(
+            question: "Translate and make the sentence: Banu lives in Almaty",
+            shuffledWords: ["Алматыда", "Бану", "тұрады"],
+            correctSentence: "Бану Алматыда тұрады"
+        ),
+        onContinue: {
+            print("✅ Correct answer, continue tapped.")
+        },
+        onWrong: {
+            print("❌ Wrong answer, continue tapped.")
+        }
+    )
+}
+

@@ -22,16 +22,16 @@ struct MainView: View {
                     Spacer()
                     ProgressView("Loading...")
                         .padding()
+                    Spacer()
                 } else if let error = viewModel.errorMessage {
                     Spacer()
                     Text("Ошибка: \(error)")
                         .foregroundColor(.red)
                         .padding()
+                    Spacer()
                 } else {
                     units
                 }
-                
-                Spacer()
             }
             .task {
                 await viewModel.loadInitialData()
@@ -62,38 +62,38 @@ struct MainView: View {
     
     
     var units: some View {
-        VStack {
+        ScrollView {
             VStack {
-               HStack {
-                   VStack {
-                       Constant.getText(text: "Units", font: .bold, size: 16)
-                           .frame(maxWidth: .infinity, alignment: .leading)
-                       Constant.getText(text: "Units here", font: .regular, size: 12)
-                           .frame(maxWidth: .infinity, alignment: .leading)
-                           .padding(.top, 5)
-                   }
-                   
-                   Spacer()
-                   
-                   Image(systemName: "text.book.closed.fill")
-                       .configure
-                       .frame(maxWidth: 14)
-                       .padding(7)
-                       .overlay {
-                           RoundedRectangle(cornerRadius: 10)
-                               .stroke(Constant.black.opacity(0.2), lineWidth: 1)
-                       }
-                       .shadow(color: Constant.black.opacity(0.2), radius: 10, x: 1, y: 1)
-               }
-               .padding()
-               .background(Constant.gold)
-               .foregroundColor(Constant.white)
-               .cornerRadius(16)
-               .padding(.top)
-            }
-            .padding(.horizontal)
-            
-            ScrollView {
+                VStack {
+                    HStack {
+                        VStack {
+                            Constant.getText(text: "Unit 1", font: .bold, size: 16)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Constant.getText(text: "Units here", font: .regular, size: 12)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.top, 5)
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "text.book.closed.fill")
+                            .configure
+                            .frame(maxWidth: 14)
+                            .padding(7)
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Constant.black.opacity(0.2), lineWidth: 1)
+                            }
+                            .shadow(color: Constant.black.opacity(0.2), radius: 10, x: 1, y: 1)
+                    }
+                    .padding()
+                    .background(Constant.gold)
+                    .foregroundColor(Constant.white)
+                    .cornerRadius(16)
+                    .padding(.top)
+                }
+                .padding(.horizontal)
+                
                 ZStack {
                     VStack(spacing: 0) {
                         ForEach(viewModel.units) { unit in
@@ -120,6 +120,66 @@ struct MainView: View {
                             )
                     }
                 }
+                
+                VStack {
+                    HStack {
+                        VStack {
+                            Constant.getText(text: "Unit 2", font: .bold, size: 16)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Constant.getText(text: "Units here", font: .regular, size: 12)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.top, 5)
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "text.book.closed.fill")
+                            .configure
+                            .frame(maxWidth: 14)
+                            .padding(7)
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Constant.black.opacity(0.2), lineWidth: 1)
+                            }
+                            .shadow(color: Constant.black.opacity(0.2), radius: 10, x: 1, y: 1)
+                    }
+                    .padding()
+                    .background(Constant.gray)
+                    .foregroundColor(Constant.white)
+                    .cornerRadius(16)
+                    .padding(.top)
+                }
+                .padding(.horizontal)
+                
+                VStack {
+                    HStack {
+                        VStack {
+                            Constant.getText(text: "Unit 3", font: .bold, size: 16)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Constant.getText(text: "Units here", font: .regular, size: 12)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.top, 5)
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "text.book.closed.fill")
+                            .configure
+                            .frame(maxWidth: 14)
+                            .padding(7)
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Constant.black.opacity(0.2), lineWidth: 1)
+                            }
+                            .shadow(color: Constant.black.opacity(0.2), radius: 10, x: 1, y: 1)
+                    }
+                    .padding()
+                    .background(Constant.gray)
+                    .foregroundColor(Constant.white)
+                    .cornerRadius(16)
+                    .padding(.top)
+                }
+                .padding(.horizontal)
             }
         }
     }
@@ -134,8 +194,4 @@ struct MainView: View {
         }
         return alignment
     }
-}
-
-#Preview {
-    MainView()
 }

@@ -10,6 +10,7 @@ import SwiftUI
 struct LevelFillView: View {
     var item: FillTextItem
     var onContinue: () -> Void
+    var onWrong: () -> Void
 
     @State private var showAnswer: Bool = false
     @State private var answer: String = ""
@@ -31,7 +32,12 @@ struct LevelFillView: View {
     private var continueButton: some View {
         Button(action: {
             if showAnswer {
-                onContinue()
+                if answer.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) == item.correct.lowercased() {
+                    onContinue()
+                } else {
+                    onWrong()
+                }
+                
             } else {
                 showAnswer = true
             }
@@ -86,10 +92,10 @@ struct LevelFillView: View {
     private var fillText: some View {
         HStack(spacing: 4) {
             Constant.getText(text: item.question, font: .regular, size: 20)
-            TextField("_________.", text: $answer)
-
+            TextField("_____.", text: $answer)
+                .frame(maxWidth: 75)
         }
-        .padding(.horizontal, Constant.radius)
+        .frame(maxWidth: .infinity, alignment: .bottomLeading)
     }
 
     var body: some View {
@@ -112,5 +118,22 @@ struct LevelFillView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: Constant.width * 0.4)
         }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 16)
     }
+}
+
+#Preview {
+    LevelFillView(
+        item: FillTextItem.init(
+            question: "Уақытты көрсететін құрал - ",
+            correct: "қолым"
+        ),
+        onContinue: {
+            print("✅ Correct answer, continue tapped.")
+        },
+        onWrong: {
+            print("❌ Wrong answer, continue tapped.")
+        }
+    )
 }

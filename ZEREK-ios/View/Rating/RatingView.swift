@@ -45,7 +45,7 @@ struct RatingView: View {
 
     private var rankText: some View {
         Constant.getText(
-            text: "You ranked \(1) last week",
+            text: "Rating",
             font: .bold,
             size: 24
         )
