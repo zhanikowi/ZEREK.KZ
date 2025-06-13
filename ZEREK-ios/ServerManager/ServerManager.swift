@@ -191,36 +191,36 @@ final class ServerManager {
             completion(.failure(NSError(domain: "No user", code: 401)))
             return
         }
-
+        
         guard let userEmail = user.email else {
             completion(.failure(NSError(domain: "No user email", code: 401)))
             return
         }
-
+        
         let db = Firestore.firestore()
         let userRef = db.collection("users").document(userEmail)
         var updatedFields: [String: Any] = [:]
-
+        
         if let firstName = firstName, !firstName.isEmpty {
             updatedFields["firstName"] = firstName
         }
-
+        
         if let lastName = lastName, !lastName.isEmpty {
             updatedFields["lastName"] = lastName
         }
-
+        
         func finishWithUserData() {
             userRef.getDocument { document, error in
                 if let error = error {
                     completion(.failure(error))
                     return
                 }
-
+                
                 guard let data = document?.data() else {
                     completion(.failure(NSError(domain: "No user data", code: 404)))
                     return
                 }
-
+                
                 do {
                     let userModel = try Firestore.Decoder().decode(UserModel.self, from: data)
                     completion(.success(userModel))
@@ -229,7 +229,7 @@ final class ServerManager {
                 }
             }
         }
-
+        
         let updatePasswordIfNeeded: (@escaping () -> Void) -> Void = { next in
             if let newPassword = newPassword, !newPassword.isEmpty {
                 user.updatePassword(to: newPassword) { error in
@@ -243,7 +243,7 @@ final class ServerManager {
                 next()
             }
         }
-
+        
         if !updatedFields.isEmpty {
             userRef.updateData(updatedFields) { error in
                 if let error = error {
@@ -260,7 +260,6 @@ final class ServerManager {
             }
         }
     }
-
     
     static func fetchCompletedUnitKeys(email: String) async throws -> [String] {
         let doc = try await Firestore.firestore().collection("users").document(email).getDocument()
@@ -342,6 +341,20 @@ final class ServerManager {
         }
     }
     
+    static func fetchVideoCallHistory() async throws -> [VideoCallModel] {
+        let snapshot = try await Firestore.firestore().collection("videoCall").document("callHistory").getDocument()
+        
+        let callHistory: [String: String] = try snapshot.data(as: [String: String].self)
+            
+        var videoCallHistory: [VideoCallModel] = []
+        
+        for (mentor, duration) in callHistory {
+            videoCallHistory.append(VideoCallModel(callName: mentor, callDuration: duration))
+        }
+        
+        return videoCallHistory
+    }
+    
     static func fetchAudioDictionaryWords(completion: @escaping (Result<[AudioDictionaryModel], Error>) -> Void) {
         let db = Firestore.firestore()
         let docRef = db.collection("dictionary").document("words")
@@ -409,7 +422,7 @@ final class ServerManager {
         
         try await user?.reauthenticate(with: credential)
         
-        try await db.collection("users").document(user!.uid).delete()
+        try await db.collection("users").document(email).delete()
         
         try await user?.delete()
     }

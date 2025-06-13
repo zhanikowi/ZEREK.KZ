@@ -96,6 +96,7 @@ struct LevelFillView: View {
                 .frame(maxWidth: 75)
         }
         .frame(maxWidth: .infinity, alignment: .bottomLeading)
+        .padding(.leading, 16)
     }
 
     var body: some View {
@@ -119,7 +120,6 @@ struct LevelFillView: View {
             .frame(maxWidth: .infinity, maxHeight: Constant.width * 0.4)
         }
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, 16)
     }
 }
 

@@ -24,12 +24,6 @@ struct VideoCallView: View {
         .init(name: "Nuray Zhumabay", phoneNumber: "+77751314805")
     ]
     
-    private let calls: [VideoCallModel] = [
-        .init(callName: "Gaisha Aripkhan", callDuration: "3 min"),
-        .init(callName: "Gulzhanat Toraliyeva", callDuration: "4 min"),
-        .init(callName: "Nuray Zhumabay", callDuration: "1 min")
-    ]
-    
     var body: some View {
         ZStack {
             VStack(spacing: 16) {
@@ -58,35 +52,44 @@ struct VideoCallView: View {
                     }
                 }
                 
-                Text("Call history")
-                    .font(.system(size: 24, weight: .bold))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 16)
-                
-                ScrollView {
-                    VStack(spacing: 16) {
-                        ForEach(calls) { call in
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text(call.callName)
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundColor(.white)
-                                
-                                Text(call.callDuration)
-                                    .font(.system(size: 16))
-                                    .foregroundColor(.white.opacity(0.9))
+                if viewModel.isLoading {
+                    Spacer()
+                    ProgressView("Loading calls...")
+                        .progressViewStyle(CircularProgressViewStyle(tint: Constant.purple))
+                        .scaleEffect(1.3)
+                        .padding()
+                    Spacer()
+                } else {
+                    Text("Call history")
+                        .font(.system(size: 24, weight: .bold))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 16)
+                    
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            ForEach(viewModel.callHistory) { call in
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text(call.callName)
+                                        .font(.system(size: 20, weight: .bold))
+                                        .foregroundColor(.white)
+                                    
+                                    Text(call.callDuration)
+                                        .font(.system(size: 16))
+                                        .foregroundColor(.white.opacity(0.9))
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(Color.yellow)
+                                .cornerRadius(20)
+                                .padding(.horizontal, 16)
                             }
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color.yellow)
-                            .cornerRadius(20)
-                            .padding(.horizontal, 16)
                         }
+                        .padding(.top, 8)
                     }
-                    .padding(.top, 8)
+                    
+                    Spacer()
                 }
-                
-                Spacer()
             }
             .sheet(isPresented: $showTeacherList) {
                 TeacherSelectionFullScreenView(teachers: teachers) { teacher in

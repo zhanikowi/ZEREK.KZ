@@ -13,6 +13,14 @@ class VideoCallViewModel: ObservableObject {
     @Published var currentUser: UserModel?
     @Published var showAlert = false
     @Published var alertMessage = ""
+    @Published var callHistory: [VideoCallModel] = []
+    @Published var isLoading = false
+    
+    init() {
+        Task {
+            await fetchCallHistory()
+        }
+    }
     
     func loadUser() async {
         do {
@@ -48,6 +56,25 @@ class VideoCallViewModel: ObservableObject {
                 self?.alertMessage = "Error writing off coins: \(error.localizedDescription)"
                 self?.showAlert = true
             }
+        }
+    }
+    
+    func fetchCallHistory() async {
+        await MainActor.run {
+            self.isLoading = true
+        }
+        
+        do {
+            let result = try await ServerManager.fetchVideoCallHistory()
+            await MainActor.run {
+                self.callHistory = result
+            }
+        } catch {
+            print("❌ Ошибка при загрузке рейтинга: \(error.localizedDescription)")
+        }
+        
+        await MainActor.run {
+            self.isLoading = false
         }
     }
 }
